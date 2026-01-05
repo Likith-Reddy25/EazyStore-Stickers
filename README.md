@@ -53,8 +53,34 @@ A **full-stack online shopping platform** that allows users to browse products, 
 
 ---
 ##  Installation
-1) Clone the repository
-   [Link Text]()
+1) Backend
+# Clone repository
+git clone https://github.com/your-username/ecommerce-app.git
+
+# Navigate to backend
+cd backend
+
+# Run application
+mvn spring-boot:run
+
+2) Frontend
+# Navigate to frontend
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start React app
+npm start
+
+---
+
+# Usage
+1) As a user, you can browse through medicines and place orders securely.
+---
+3) As an admin, you can use the admin code to manage the inventory by adding or deleting medicines.
+
+
 
    
 
