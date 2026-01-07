@@ -63,7 +63,10 @@ public class EazyStoreSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://eazystore-stickers.onrender.com"));
-        config.setAllowedMethods(Collections.singletonList("*"));
+        config.setAllowedMethods(Arrays.asList(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS"
+        ));
+
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
