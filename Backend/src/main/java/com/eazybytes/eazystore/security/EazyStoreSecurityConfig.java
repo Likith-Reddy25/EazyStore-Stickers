@@ -48,6 +48,10 @@ public class EazyStoreSecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/products/**", "/api/v1/auth/**").permitAll()
                         .anyRequest().authenticated()
+
+                ).addFilterBefore(
+                        new JWTTokenValidatorFilter(publicPaths),
+                        UsernamePasswordAuthenticationFilter.class
                 );
 
         return http.build();
