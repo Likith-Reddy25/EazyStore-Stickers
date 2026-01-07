@@ -38,27 +38,23 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        String path = request.getRequestURI();
-
-        // ✅ SKIP JWT validation for public endpoints
-        if (path.startsWith("/api/v1/products")
-                || path.startsWith("/api/v1/auth")
-                || "OPTIONS".equalsIgnoreCase(request.getMethod())) {
-
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        String path = request.getRequestURI();
 
-        String authHeader = request.getHeader(ApplicationConstants.JWT_HEADER);
-
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            response.setStatus(HttpServletResponse.SC_OK);
-            return;
+        // ✅ Skip JWT validation for public paths
+        for (String publicPath : publicPaths) {
+            if (path.startsWith(publicPath.replace("/**", ""))) {
+                filterChain.doFilter(request, response);
+                return;
+            }
         }
 
 
-
+        String authHeader = request.getHeader(ApplicationConstants.JWT_HEADER);
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             try {
