@@ -40,6 +40,11 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader(ApplicationConstants.JWT_HEADER);
 
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             try {
@@ -90,9 +95,6 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
 
-//        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-//            return true;
-//        }
 
         String path = request.getRequestURI();
         return publicPaths.stream()
