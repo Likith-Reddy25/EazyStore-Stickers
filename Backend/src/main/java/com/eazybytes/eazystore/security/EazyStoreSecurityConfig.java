@@ -50,7 +50,7 @@ public class EazyStoreSecurityConfig {
                             requests.anyRequest().authenticated();
                         }
                 )
-                .addFilterBefore(new JWTTokenValidatorFilter(publicPaths),BasicAuthenticationFilter.class )
+                .addFilterAfter(new JWTTokenValidatorFilter(publicPaths),BasicAuthenticationFilter.class )
 //                .formLogin(withDefaults())
                 .httpBasic(withDefaults()).build();
 //                .build()
