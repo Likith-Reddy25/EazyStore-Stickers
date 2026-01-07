@@ -43,14 +43,12 @@ public class EazyStoreSecurityConfig {
             throws Exception {
         return http.csrf(csrfConfig -> csrfConfig.disable())
                 .cors(corsConfig -> corsConfig.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests((requests) -> {
-                    requests.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
-                            publicPaths.forEach(path ->
-                                    requests.requestMatchers(path).permitAll());
-                            requests.anyRequest().authenticated();
-                        }
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/v1/products/**", "/api/v1/auth/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .addFilterAfter(new JWTTokenValidatorFilter(publicPaths),BasicAuthenticationFilter.class )
+                .addFilterBefore(new JWTTokenValidatorFilter(publicPaths), UsernamePasswordAuthenticationFilter.class )
 //                .formLogin(withDefaults())
                 .httpBasic(withDefaults()).build();
 //                .build()
@@ -64,23 +62,32 @@ public class EazyStoreSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList(
+
+        config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "https://eazystore-stickers.onrender.com"
         ));
 
-        config.setAllowedMethods(Arrays.asList(
+        config.setAllowedMethods(List.of(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS"
         ));
 
-        config.setAllowedHeaders(Collections.singletonList("*"));
+        config.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type"
+        ));
+
+        config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(
