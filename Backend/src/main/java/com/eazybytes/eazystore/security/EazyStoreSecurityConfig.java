@@ -4,6 +4,7 @@ import com.eazybytes.eazystore.filter.JWTTokenValidatorFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -43,6 +44,7 @@ public class EazyStoreSecurityConfig {
         return http.csrf(csrfConfig -> csrfConfig.disable())
                 .cors(corsConfig -> corsConfig.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((requests) -> {
+                    requests.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                             publicPaths.forEach(path ->
                                     requests.requestMatchers(path).permitAll());
                             requests.anyRequest().authenticated();
