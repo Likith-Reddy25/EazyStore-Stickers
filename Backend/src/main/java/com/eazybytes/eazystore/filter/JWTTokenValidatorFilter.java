@@ -40,6 +40,17 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader(ApplicationConstants.JWT_HEADER);
 
+        String path = request.getServletPath();
+
+// ✅ Skip JWT for public paths & preflight
+        if (path.startsWith("/products") ||
+                path.startsWith("/auth") ||
+                "OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;}
+
+
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             try {
                 String jwt = authHeader.substring(7);
@@ -89,9 +100,9 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
 
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            return true;
-        }
+//        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+//            return true;
+//        }
 
         String path = request.getRequestURI();
         return publicPaths.stream()
