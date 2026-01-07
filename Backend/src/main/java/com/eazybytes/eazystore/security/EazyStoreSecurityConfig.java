@@ -42,6 +42,7 @@ public class EazyStoreSecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
             throws Exception {
         return http.csrf(csrfConfig -> csrfConfig.disable())
+                .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/products/**", "/api/v1/auth/**").permitAll()
