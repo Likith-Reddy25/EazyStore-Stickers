@@ -1,5 +1,7 @@
 package com.eazybytes.eazystore.security;
 
+//import lombok.Value;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,13 +16,17 @@ import java.util.List;
 @Configuration
 public class WebCorsConfig {
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
 
+
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
-                "https://eazystore-stickers.onrender.com"
+                frontendUrl
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
