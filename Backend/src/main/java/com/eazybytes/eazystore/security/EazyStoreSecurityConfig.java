@@ -39,19 +39,38 @@ public class EazyStoreSecurityConfig {
     private final List<String> publicPaths;
 
     @Bean
-    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-            throws Exception {
-        return http.csrf(csrfConfig -> csrfConfig.disable())
-                .cors(withDefaults())
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/products/**", "/api/v1/auth/**").permitAll()
                         .anyRequest().authenticated()
-                )
-//                .addFilterBefore(new JWTTokenValidatorFilter(publicPaths), UsernamePasswordAuthenticationFilter.class )
-//                .formLogin(withDefaults())
-                .httpBasic(withDefaults()).build();
-//                .build()
+                );
+
+        return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOrigins(
+                List.of("https://eazystore-stickers.onrender.com")
+        );
+        config.setAllowedMethods(
+                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        );
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
     }
 
     @Bean
