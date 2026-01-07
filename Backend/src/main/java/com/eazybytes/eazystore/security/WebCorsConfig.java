@@ -20,7 +20,7 @@ public class WebCorsConfig {
 
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
-                "https://eazystore-stickers.onrender.com"
+                "https://eazystore-stickers.onrender.com/api/v1"
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
