@@ -64,7 +64,11 @@ public class EazyStoreSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://eazystore-stickers.onrender.com"));
+        config.setAllowedOriginPatterns(Arrays.asList(
+                "http://localhost:5173",
+                "https://eazystore-stickers.onrender.com"
+        ));
+
         config.setAllowedMethods(Arrays.asList(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS"
         ));
