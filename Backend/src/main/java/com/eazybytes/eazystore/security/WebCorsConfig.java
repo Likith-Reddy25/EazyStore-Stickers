@@ -26,7 +26,7 @@ public class WebCorsConfig {
 
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
-                frontendUrl
+                "http://localhost:5173"
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
