@@ -24,33 +24,38 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
 //    private final Environment env;
     private final List<String> publicPaths;
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
+    public JWTTokenValidatorFilter(List<String> publicPaths) {
+        this.publicPaths = publicPaths;
+    }
+
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+
+        // ✅ ALWAYS allow OPTIONS (CORS preflight)
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String path = request.getRequestURI();
+        // ✅ SKIP JWT validation for public endpoints
+        if (path.startsWith("/api/v1/products")
+                || path.startsWith("/api/v1/auth")
+                || path.startsWith("/api/v1/check")) {
 
-        // ✅ Skip JWT validation for public paths
-        for (String publicPath : publicPaths) {
-            if (path.startsWith(publicPath.replace("/**", ""))) {
-                filterChain.doFilter(request, response);
-                return;
-            }
+            filterChain.doFilter(request, response);
+            return;
         }
 
 
