@@ -61,7 +61,7 @@ public class EazyStoreSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(
+        config.setAllowedOriginPatterns(
                 List.of("http://localhost:5173")
         );
         config.setAllowedMethods(
