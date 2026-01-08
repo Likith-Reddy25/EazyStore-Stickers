@@ -24,83 +24,61 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
-//    private final Environment env;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private final List<String> publicPaths;
-    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
-
-    public JWTTokenValidatorFilter(List<String> publicPaths) {
-        this.publicPaths = publicPaths;
-    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
-
-        String path = request.getRequestURI();
-
-        // ✅ ALWAYS allow OPTIONS (CORS preflight)
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // ✅ SKIP JWT validation for public endpoints
-        if (path.startsWith("/api/v1/products")
-                || path.startsWith("/api/v1/auth")
-                || path.startsWith("/api/v1/check")) {
-
-            filterChain.doFilter(request, response);
-            return;
-        }
-
 
         String authHeader = request.getHeader(ApplicationConstants.JWT_HEADER);
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             try {
-                String jwt = authHeader.substring(7);
-                Environment env= getEnvironment();
-                String secret = env.getProperty(
-                        ApplicationConstants.JWT_SECRET_KEY,
-                        ApplicationConstants.JWT_SECRET_DEFAULT_VALUE
-                );
+                String jwt = authHeader.substring(7); // Remove "Bearer "
 
-                SecretKey secretKey =
-                        Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+                Environment env = getEnvironment();
+                if (env != null) {
+                    String secret = env.getProperty(
+                            ApplicationConstants.JWT_SECRET_KEY,
+                            ApplicationConstants.JWT_SECRET_DEFAULT_VALUE
+                    );
 
-                Claims claims = Jwts.parser()
-                        .verifyWith(secretKey)
-                        .build()
-                        .parseSignedClaims(jwt)
-                        .getPayload();
+                    SecretKey secretKey = Keys.hmacShaKeyFor(
+                            secret.getBytes(StandardCharsets.UTF_8)
+                    );
 
-                String username = claims.get("email", String.class);
+                    Claims claims = Jwts.parser()
+                            .verifyWith(secretKey)
+                            .build()
+                            .parseSignedClaims(jwt)
+                            .getPayload();
 
-                Authentication authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                                Collections.emptyList()
-                        );
+                    String username = claims.get("email", String.class);
 
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
+                    Authentication authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    username,
+                                    null,
+                                    Collections.emptyList() // ✅ No roles
+                            );
 
-            }catch (ExpiredJwtException exception) {
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(authentication);
+                }
+
+            } catch (ExpiredJwtException ex) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Token Expired");
                 return;
-            }
-
-            catch (Exception ex) {
-                SecurityContextHolder.clearContext();
-                ex.printStackTrace();
-                throw new BadCredentialsException("Invalid JWT Token");
+            } catch (Exception ex) {
+                throw new BadCredentialsException("Invalid Token received!");
             }
         }
 
@@ -108,11 +86,11 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-
+    protected boolean shouldNotFilter(HttpServletRequest request)
+            throws ServletException {
 
         String path = request.getRequestURI();
         return publicPaths.stream()
-                .anyMatch(publicPath -> antPathMatcher.match(publicPath, path));
+                .anyMatch(publicPath -> pathMatcher.match(publicPath, path));
     }
 }
