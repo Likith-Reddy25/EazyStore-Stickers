@@ -46,7 +46,7 @@ public class EazyStoreSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/v1/products/**", "/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/products/**", "/api/v1/auth/**", "/api/v1/check/**").permitAll()
                         .anyRequest().authenticated()
 
                 ).addFilterBefore(
