@@ -71,6 +71,8 @@ export default function Home() {
     );
   }
 
+
+
   // Show error message if fetch fails
   if (error) {
     return (
