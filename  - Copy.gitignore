@@ -1,0 +1,5 @@
+node_modules/
+target/
+.idea/
+
+Backend/src/main/resources/application_local.properties
