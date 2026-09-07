@@ -1,13 +1,15 @@
 package com.eazybytes.eazystore.controller;
 
+import com.eazybytes.eazystore.dto.AddressDto;
+import com.eazybytes.eazystore.dto.ApiResponseDto;
 import com.eazybytes.eazystore.dto.OrderRequestDto;
+import com.eazybytes.eazystore.dto.OrderResponseDto;
 import com.eazybytes.eazystore.service.IOrderService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.springframework.data.repository.config.RepositoryNameSpaceHandler;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/orders")
@@ -21,4 +23,28 @@ public class OrderController {
         iOrderService.createOrder(requestDto);
         return ResponseEntity.ok("Order created successfully");
     }
+
+//    Fetch Order details and Status
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderResponseDto> getOrderbyId(@PathVariable Long orderId){
+        return ResponseEntity.ok(iOrderService.getOrderDetails(orderId));
+    }
+
+    //Cancel Order (Only if processing)
+    @PutMapping("/{orderId}/cancel")
+    public ResponseEntity<ApiResponseDto> cancelOrder(@PathVariable Long orderId){
+        iOrderService.cancelOrder(orderId);
+        return ResponseEntity.ok(new ApiResponseDto("Order Cancelled Successfully"));
+    }
+
+    //Update shipping address
+    @PutMapping("/{orderId}/address")
+    public ResponseEntity<ApiResponseDto> updateOrderAddress(
+            @PathVariable Long orderId,
+            @RequestBody AddressDto addressDto
+    ){
+        iOrderService.updateOrderAddress(orderId, addressDto);
+        return ResponseEntity.ok(new ApiResponseDto("Shipping Address updated Successfully"));
+    }
+
 }
