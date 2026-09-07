@@ -7,18 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class OrderResponseDto {
-    private Long orderId;
-    private String orderStatus;
-    private BigDecimal totalPrice;
-    private Instant createdAt;
-    private AddressDto address;
-    private List<OrderItemDto> items;
+public record OrderResponseDto(Long orderId, String status,
+                               BigDecimal totalPrice, String createdAt,
+                               String trackingNumber,
+                               String deliveryCarrier,
+                               String estimatedDelivery,
+                               List<OrderItemResponseDto> items) {
 }

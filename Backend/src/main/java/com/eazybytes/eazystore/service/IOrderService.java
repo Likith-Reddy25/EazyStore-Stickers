@@ -4,10 +4,14 @@ import com.eazybytes.eazystore.dto.AddressDto;
 import com.eazybytes.eazystore.dto.OrderRequestDto;
 import com.eazybytes.eazystore.dto.OrderResponseDto;
 
+import java.util.List;
+
 public interface IOrderService {
     void createOrder(OrderRequestDto requestDto);
 
-    OrderResponseDto getOrderDetails(Long orderId);
+    List<OrderResponseDto> getCustomerOrders();
+
+    OrderResponseDto getOrderDetails(Long orderId); // <-- For looking up a single order
 
     void cancelOrder(Long orderId);
 

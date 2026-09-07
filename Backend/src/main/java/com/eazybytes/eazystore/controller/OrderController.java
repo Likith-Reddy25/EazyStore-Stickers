@@ -6,10 +6,10 @@ import com.eazybytes.eazystore.dto.OrderRequestDto;
 import com.eazybytes.eazystore.dto.OrderResponseDto;
 import com.eazybytes.eazystore.service.IOrderService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.data.repository.config.RepositoryNameSpaceHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/orders")
@@ -22,6 +22,12 @@ public class OrderController {
     public ResponseEntity<String> createOrder(@RequestBody OrderRequestDto requestDto){
         iOrderService.createOrder(requestDto);
         return ResponseEntity.ok("Order created successfully");
+    }
+
+    // 2. Get all orders for the authenticated customer
+    @GetMapping
+    public ResponseEntity<List<OrderResponseDto>> getCustomerOrders() {
+        return ResponseEntity.ok(iOrderService.getCustomerOrders());
     }
 
 //    Fetch Order details and Status

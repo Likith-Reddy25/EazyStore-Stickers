@@ -1,10 +1,7 @@
 package com.eazybytes.eazystore.service.impl;
 
 import com.eazybytes.eazystore.Constants.ApplicationConstants;
-import com.eazybytes.eazystore.dto.AddressDto;
-import com.eazybytes.eazystore.dto.OrderItemDto;
-import com.eazybytes.eazystore.dto.OrderRequestDto;
-import com.eazybytes.eazystore.dto.OrderResponseDto;
+import com.eazybytes.eazystore.dto.*;
 import com.eazybytes.eazystore.entity.*;
 import com.eazybytes.eazystore.exception.ResourceNotFoundException;
 import com.eazybytes.eazystore.repository.CustomerRepository;
@@ -16,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.beans.Transient;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,43 +46,57 @@ public class OrderServiceImpl implements IOrderService {
             return orderItem;
         }).collect(Collectors.toList());
         order.setOrderItems(orderItems);
-        order.setOrderStatus(ApplicationConstants.ORDER_STATUS_CREATED);
-        order.setPaymentId("TEMP_ID");
-        order.setPaymentStatus("PENDING");
         orderRepository.save(order);
 
     }
     @Override
-    @Transactional
-    public OrderResponseDto getOrderDetails(Long orderId){
-        Order order= orderRepository.findById(orderId)
-                .orElseThrow(()->new ResourceNotFoundException("Order", "orderId", orderId.toString()));
+    public List<OrderResponseDto> getCustomerOrders(){
+        Customer customer= profileService.getAuthenticatedCustomer();
+        List<Order> orders = orderRepository.findOrdersByCustomerWithNativeQuery(customer.getCustomerId());
+        return orders.stream().map(this::mapToOrderResponseDTO).collect(Collectors.toList());
+    }
 
-        //Map Address entity to AddressDto (using your existing AddressDto)
-        AddressDto addressDto = new AddressDto();
-        Address address=  (order.getCustomer() != null) ? order.getCustomer().getAddress() : null;
-        if (address != null) {
-            addressDto.setStreet(address.getStreet());
-            addressDto.setCity(address.getCity());
-            addressDto.setState(address.getState());
-            addressDto.setPostalCode(address.getPostalCode());
-            addressDto.setCountry(address.getCountry());
-        }
-        // Map OrderItems to OrderItemDto
-        List<OrderItemDto> itemDtos = order.getOrderItems().stream()
-                .map(item -> new OrderItemDto(
-                        item.getProduct().getProductId(),
-                        item.getQuantity(),
-                        item.getPrice()
-                )).toList();
-        return OrderResponseDto.builder()
-                .orderId(order.getOrderId())
-                .orderStatus(order.getOrderStatus())
-                .totalPrice(order.getTotalPrice())
-                .createdAt(order.getCreatedAt())
-                .address(addressDto)
-                .items(itemDtos)
-                .build();
+    @Override
+    public OrderResponseDto getOrderDetails(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "orderId", orderId.toString()));
+        return mapToOrderResponseDTO(order);
+    }
+
+    /**
+     * Map Order entity to OrderResponseDto
+     */
+    private OrderResponseDto mapToOrderResponseDTO(Order order) {
+        // Map Order Items
+        List<OrderItemResponseDto> itemDTOs = order.getOrderItems().stream()
+                .map(this::mapToOrderItemResponseDTO)
+                .collect(Collectors.toList());
+
+        // Simulated tracking values until DB columns are added
+        String trackingNumber = "TRK-EAZY-" + order.getOrderId();
+        String deliveryCarrier = "EazyExpress";
+        String estimatedDelivery = "Within 2-3 business days";
+
+        return new OrderResponseDto(
+                order.getOrderId(),
+                order.getOrderStatus(),
+                order.getTotalPrice(),
+                order.getCreatedAt() != null ? order.getCreatedAt().toString() : null,
+                trackingNumber,
+                deliveryCarrier,
+                estimatedDelivery,
+                itemDTOs
+        );
+    }
+
+    /**
+     * Map OrderItem entity to OrderItemResponseDto
+     */
+    private OrderItemResponseDto mapToOrderItemResponseDTO(OrderItem orderItem) {
+        OrderItemResponseDto itemDTO = new OrderItemResponseDto(
+                orderItem.getProduct().getName(), orderItem.getQuantity(),
+                orderItem.getPrice(), orderItem.getProduct().getImageUrl());
+        return itemDTO;
     }
 
     @Override
