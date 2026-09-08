@@ -110,9 +110,9 @@ export default function CheckoutForm() {
         setErrorMessage(error.message || "Payment failed. Please try again.");
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
         toast.success("Payment successful!");
-        sessionStorage.setItem("skipRedirectPath", "true");
-          clearCart();
-          navigate("/order-success");
+        // sessionStorage.setItem("skipRedirectPath", "true");
+        //   clearCart();
+        //   navigate("/order-success");
         try {
           await apiClient.post("/orders", {
             totalPrice: totalPrice,
