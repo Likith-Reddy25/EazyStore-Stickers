@@ -31,7 +31,9 @@ public class OrderServiceImpl implements IOrderService {
         // Create Order
         Order order = new Order();
         order.setCustomer(customer);
-        BeanUtils.copyProperties(requestDto, order);
+        order.setTotalPrice(requestDto.totalPrice());
+        order.setPaymentId(requestDto.paymentId());
+        order.setPaymentStatus(requestDto.paymentStatus());
         order.setOrderStatus(ApplicationConstants.ORDER_STATUS_CREATED);
         // Map OrderItems
         List<OrderItem> orderItems = requestDto.items().stream().map(item -> {

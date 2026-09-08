@@ -73,7 +73,9 @@ public class EazyStoreSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("https://eazy-store-stickers.vercel.app"));
+        config.setAllowedOrigins(Arrays.asList("https://eazy-store-stickers.vercel.app",
+                "http://localhost:5173",
+                "http://localhost:3000"));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setAllowCredentials(true);

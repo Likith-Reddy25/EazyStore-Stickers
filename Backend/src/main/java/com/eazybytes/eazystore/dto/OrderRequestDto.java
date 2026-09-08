@@ -10,5 +10,5 @@ import java.time.Instant;
 import java.util.List;
 
 public record OrderRequestDto(BigDecimal totalPrice,
-                              String paymentID, String paymentStatus, List<OrderItemDto> items) {
+                              String paymentId, String paymentStatus, List<OrderItemDto> items) {
 }
