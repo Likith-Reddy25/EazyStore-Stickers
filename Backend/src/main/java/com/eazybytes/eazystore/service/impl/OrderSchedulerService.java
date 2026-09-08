@@ -36,18 +36,18 @@ public class OrderSchedulerService {
 
             // Prototype Timeline
             // After 3 minutes -> DELIVERED
-            if(minutesPassed>=3 && !"DELIVERED".equals(currentStatus)){
+            if(minutesPassed>=15 && !"DELIVERED".equals(currentStatus)){
                 order.setOrderStatus("DELIVERED");
                 orderRepository.save(order);
 //                log.info("Order #{} auto-updated to DELIVERED", order.getOrderId());
             }
             //After 2 minutes -> SHIPPED
-            else if(minutesPassed>=2 && "PROCESSING".equals(currentStatus)){
+            else if(minutesPassed>=7 && "PROCESSING".equals(currentStatus)){
                 order.setOrderStatus("SHIPPED");
                 orderRepository.save(order);
             }
             //After 1 minute -> Processing
-            else if(minutesPassed>=1 && "CREATED".equalsIgnoreCase(currentStatus)){
+            else if(minutesPassed>=2 && "CREATED".equalsIgnoreCase(currentStatus)){
                 order.setOrderStatus("PROCESSING");
                 orderRepository.save(order);
             }
