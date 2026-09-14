@@ -15,7 +15,9 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:3000",
-        "https://eazy-store-stickers.vercel.app/"
+        "https://eazy-store-stickers.vercel.app",
+        "https://eazy-store-stickers.vercel.app/",
+        "*"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -30,9 +32,11 @@ class ChatResponse(BaseModel):
     response:str
     session_id: str
 
+@app.get("/")
 @app.get("/health")
 def health_check():
-    return {"success":"healthy", "service":"ShopAssist AI"}
+    return {"status": "healthy", "service": "ShopAssist AI"}
+
 
 @app.post("/api/chat", response_model= ChatResponse)
 async def chat_endpoint(request: ChatRequest):
