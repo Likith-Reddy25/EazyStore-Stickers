@@ -44,6 +44,7 @@ public class EazyStoreSecurityConfig {
                 .authorizeHttpRequests((requests) -> {
                             publicPaths.forEach(path ->
                                     requests.requestMatchers(path).permitAll());
+                            requests.requestMatchers("/api/v1/orders/**").permitAll();
                             requests.anyRequest().authenticated();
                         }
                 )
