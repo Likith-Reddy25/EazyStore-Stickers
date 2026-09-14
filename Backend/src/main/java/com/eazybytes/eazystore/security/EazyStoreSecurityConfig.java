@@ -4,6 +4,7 @@ import com.eazybytes.eazystore.filter.JWTTokenValidatorFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -44,6 +45,8 @@ public class EazyStoreSecurityConfig {
                 .authorizeHttpRequests((requests) -> {
                             publicPaths.forEach(path ->
                                     requests.requestMatchers(path).permitAll());
+
+                    requests.requestMatchers(HttpMethod.GET, "/api/v1/orders/*").permitAll();
                             requests.requestMatchers("/api/v1/orders/**").permitAll();
                             requests.anyRequest().authenticated();
                         }
