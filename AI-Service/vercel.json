@@ -1,0 +1,13 @@
+{
+    "version":2,
+    "rewrites":[
+        {
+            "source":"/(.*)","destination":"main.py"
+        }
+    ],
+    "functions": {
+    "main.py": {
+      "maxDuration": 60
+    }
+  }
+}
