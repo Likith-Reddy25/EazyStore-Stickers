@@ -33,8 +33,9 @@ export default function ChatWidget() {
     setMessages((prev) => [...prev, { sender: "user", text: message }]);
     setInput("");
     setIsLoading(true);
+    const aiBaseUrl = (import.meta.env.VITE_AI_SERVICE_URL || "http://localhost:8000").replace(/\/$/, "");
     try {
-      const res = await axios.post("http://localhost:8000/api/chat", {
+      const res = await axios.post(`${aiBaseUrl}/api/chat`, {
         message: message,
         session_id: sessionId,
       });
