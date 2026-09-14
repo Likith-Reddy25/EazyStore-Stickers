@@ -102,12 +102,23 @@ You help customers track orders, check return policies, modify shipping address,
 
 memory= MemorySaver()
 
-agent_app= create_react_agent(
-    model= llm, 
-    tools= tools,
-    checkpointer=memory,
-    state_modifier=system_prompt
-)
+# Adapt to different LangGraph versions (v0.2.x uses state_modifier/messages_modifier, v0.3+/v1.x uses prompt)
+import inspect
+_agent_sig = inspect.signature(create_react_agent).parameters
+_agent_kwargs = {
+    "model": llm,
+    "tools": tools,
+    "checkpointer": memory,
+}
+if "prompt" in _agent_sig:
+    _agent_kwargs["prompt"] = system_prompt
+elif "state_modifier" in _agent_sig:
+    _agent_kwargs["state_modifier"] = system_prompt
+elif "messages_modifier" in _agent_sig:
+    _agent_kwargs["messages_modifier"] = system_prompt
+
+agent_app= create_react_agent(**_agent_kwargs)
+
 
 # Helper functions to run the agent
 async def process_chat(user_message: str, thread_id: str= "default_session")->str:
