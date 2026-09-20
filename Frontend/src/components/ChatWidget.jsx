@@ -35,6 +35,7 @@ export default function ChatWidget() {
     setIsLoading(true);
     const aiBaseUrl = (import.meta.env.VITE_AI_SERVICE_URL || "http://localhost:8000").replace(/\/$/, "");
     try {
+      console.log(`[ChatWidget] Sending request to: ${aiBaseUrl}/api/chat`);
       const res = await axios.post(`${aiBaseUrl}/api/chat`, {
         message: message,
         session_id: sessionId,
@@ -44,11 +45,13 @@ export default function ChatWidget() {
         { sender: "ai", text: res.data.response },
       ]);
     } catch (err) {
+      console.error("[ChatWidget] Connection failed:", err);
+      const detail = err.response?.data?.detail || err.message || "";
       setMessages((prev) => [
         ...prev,
         {
           sender: "ai",
-          text: "⚠️ Sorry, I'm having trouble connecting to the store server. Please check if AI-Service is running.",
+          text: `⚠️ Sorry, I'm having trouble connecting to the store server (${detail || "Network Error"}). Please check if AI-Service is running.`,
         },
       ]);
     } finally {
